@@ -1,1 +1,253 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>AI Discussion Coach — Conversation Dojo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="page">
 
+    <!-- HEADER -->
+    <header class="adc-header">
+      <div class="adc-header-main">
+        <div class="adc-title-block">
+          <h1>AI Discussion Coach</h1>
+          <p>Train your conversations before the room does.</p>
+        </div>
+        <div class="adc-badge">
+          <span class="badge-label">Flame Division</span>
+          <span class="badge-sub">IAIE Ready</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- MAIN LAYOUT -->
+    <main class="adc-main">
+      <!-- LEFT COLUMN: PROFILE + SCENARIO -->
+      <section class="adc-left">
+
+        <!-- PROFILE & CONTEXT PANEL -->
+        <section class="card profile-card">
+          <h2 class="card-title">Profile &amp; Context</h2>
+          <div class="field-group">
+            <label for="nameInput">Name / Alias</label>
+            <input id="nameInput" type="text" placeholder="Commander Flame, Andrew, etc." />
+          </div>
+
+          <div class="field-group">
+            <label for="certsInput">Top 5 Certifications</label>
+            <textarea id="certsInput" rows="3" placeholder="CAIO, CAIIP, Data Science &amp; AI Masters, ..."></textarea>
+          </div>
+
+          <div class="field-group">
+            <label for="roleInput">Current Role / Target Role</label>
+            <input id="roleInput" type="text" placeholder="AI Implementation Specialist, CAIO, etc." />
+          </div>
+
+          <div class="field-group">
+            <label for="stackInput">Main AI Tools / Stack</label>
+            <textarea id="stackInput" rows="3" placeholder="GPT-5, n8n, Python, TensorFlow, Jira, etc."></textarea>
+          </div>
+
+          <button id="saveProfileBtn" class="btn primary-btn">Save Profile</button>
+          <p id="profileStatus" class="status-text" aria-live="polite"></p>
+
+          <div class="field-group field-group-margin-top">
+            <label for="focusInput">What conversations do you want to get better at?</label>
+            <textarea id="focusInput" rows="3" placeholder="Explaining my value to executives, pushing back on bad AI ideas, clarifying my role, etc."></textarea>
+          </div>
+        </section>
+
+        <!-- SCENARIO & PERSONA PANEL -->
+        <section class="card scenario-card">
+          <h2 class="card-title">Scenario &amp; Persona</h2>
+
+          <div class="field-row">
+            <div class="field-group">
+              <label for="modeSelect">Conversation Mode</label>
+              <select id="modeSelect">
+                <option value="recruiter">Recruiter — Screening Call</option>
+                <option value="hiringManager">Hiring Manager — Technical Fit</option>
+                <option value="executive">Non-Technical Executive — Plain Language</option>
+                <option value="coworker">Skeptical Coworker — Pushback &amp; Doubt</option>
+              </select>
+            </div>
+            <div class="field-group">
+              <label for="difficultySelect">Difficulty</label>
+              <select id="difficultySelect">
+                <option value="warm">Warm &amp; Curious</option>
+                <option value="neutral">Neutral / Busy</option>
+                <option value="cold">Cold / Skeptical</option>
+              </select>
+            </div>
+          </div>
+
+          <button id="generateScenarioBtn" class="btn secondary-btn">Generate Discussion Prompt</button>
+
+          <div class="scenario-actions">
+            <button id="ttsScenarioBtn" class="btn ghost-btn" type="button">
+              🔊 Read Scenario Aloud
+            </button>
+            <span id="ttsScenarioStatus" class="tts-status"></span>
+          </div>
+
+          <article id="scenarioDisplay" class="scenario-display">
+            <h3>Scenario</h3>
+            <p class="scenario-text" id="scenarioText">
+              Choose a conversation mode and difficulty, then generate a scenario to begin.
+            </p>
+            <h4>Opening Line to Respond To</h4>
+            <p class="scenario-opening" id="scenarioOpening">
+              The room is waiting for your explanation. Generate a prompt to start the discussion.
+            </p>
+          </article>
+        </section>
+      </section>
+
+      <!-- RIGHT COLUMN: PRACTICE + FEEDBACK + VECTOR MATRIX + HISTORY -->
+      <section class="adc-right">
+        <!-- PRACTICE PANEL -->
+        <section class="card practice-card">
+          <h2 class="card-title">Practice Response</h2>
+          <div class="field-group">
+            <label for="responseInput">Your Response (what you would SAY out loud)</label>
+            <textarea id="responseInput" rows="7" placeholder="Speak to the scenario directly. Imagine you’re in the room, not typing an essay."></textarea>
+          </div>
+          <button id="submitResponseBtn" class="btn primary-btn">Submit Response</button>
+          <p id="responseStatus" class="status-text" aria-live="polite"></p>
+        </section>
+
+        <!-- FEEDBACK PANEL -->
+        <section class="card feedback-card">
+          <div class="feedback-header">
+            <h2 class="card-title">Assessment Coach</h2>
+            <button id="ttsFeedbackBtn" class="btn ghost-btn" type="button">
+              🔊 Read Feedback Aloud
+            </button>
+          </div>
+
+          <div class="feedback-grid">
+            <div class="feedback-item">
+              <span class="feedback-label">Opening Authority</span>
+              <span id="feedbackAuthority" class="feedback-value">—</span>
+            </div>
+            <div class="feedback-item">
+              <span class="feedback-label">Clarity &amp; Translation</span>
+              <span id="feedbackClarity" class="feedback-value">—</span>
+            </div>
+            <div class="feedback-item">
+              <span class="feedback-label">Confidence &amp; Presence</span>
+              <span id="feedbackPresence" class="feedback-value">—</span>
+            </div>
+            <div class="feedback-item">
+              <span class="feedback-label">Relevance to Role / Context</span>
+              <span id="feedbackRelevance" class="feedback-value">—</span>
+            </div>
+          </div>
+
+          <div class="status-row">
+            <span class="feedback-label">Overall Status</span>
+            <span id="overallStatus" class="status-pill status-pill-neutral">NO DATA</span>
+          </div>
+
+          <div class="hard-truth-block">
+            <h3>Hard Truth</h3>
+            <p id="hardTruthText">Your coach will speak frankly here once you submit a response.</p>
+          </div>
+
+          <div class="correction-reps">
+            <h3>Correction Reps</h3>
+            <ul id="correctionList">
+              <li>Use this space to collect small, focused corrections you’ll apply on your next rep.</li>
+            </ul>
+          </div>
+        </section>
+
+        <!-- VECTOR MEMORY MATRIX -->
+        <section class="card matrix-card">
+          <div class="matrix-header">
+            <h2 class="card-title">Signal Matrix — Vector Memory</h2>
+            <button id="ttsMatrixBtn" class="btn ghost-btn" type="button">
+              🔊 Read Vector Insight
+            </button>
+          </div>
+          <p class="matrix-sub">
+            Local-only “vector db” that clusters your last reps by outcomes, risk, human clarity, and confidence.
+          </p>
+
+          <div class="matrix-bars">
+            <div class="matrix-bar">
+              <div class="matrix-bar-label">
+                <span>Outcome Focus</span>
+                <span id="barOutcomeValue" class="matrix-bar-value">0%</span>
+              </div>
+              <div class="matrix-bar-track">
+                <div id="barOutcome" class="matrix-bar-fill"></div>
+              </div>
+            </div>
+
+            <div class="matrix-bar">
+              <div class="matrix-bar-label">
+                <span>Risk &amp; Governance</span>
+                <span id="barRiskValue" class="matrix-bar-value">0%</span>
+              </div>
+              <div class="matrix-bar-track">
+                <div id="barRisk" class="matrix-bar-fill"></div>
+              </div>
+            </div>
+
+            <div class="matrix-bar">
+              <div class="matrix-bar-label">
+                <span>Tech Depth</span>
+                <span id="barTechValue" class="matrix-bar-value">0%</span>
+              </div>
+              <div class="matrix-bar-track">
+                <div id="barTech" class="matrix-bar-fill"></div>
+              </div>
+            </div>
+
+            <div class="matrix-bar">
+              <div class="matrix-bar-label">
+                <span>Human / Stakeholder</span>
+                <span id="barHumanValue" class="matrix-bar-value">0%</span>
+              </div>
+              <div class="matrix-bar-track">
+                <div id="barHuman" class="matrix-bar-fill"></div>
+              </div>
+            </div>
+
+            <div class="matrix-bar">
+              <div class="matrix-bar-label">
+                <span>Confidence Signal</span>
+                <span id="barConfValue" class="matrix-bar-value">0%</span>
+              </div>
+              <div class="matrix-bar-track">
+                <div id="barConf" class="matrix-bar-fill"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="matrix-neighbors">
+            <h3>Closest Past Reps</h3>
+            <ul id="matrixNeighborsList" class="matrix-neighbors-list">
+              <li class="matrix-empty">Your next answer will start training the vector memory.</li>
+            </ul>
+          </div>
+        </section>
+
+        <!-- SESSION HISTORY -->
+        <section class="card history-card">
+          <h2 class="card-title">Session History (This Browser Only)</h2>
+          <ul id="historyList" class="history-list">
+            <li class="history-empty">No sessions yet. Run a scenario and submit your first response.</li>
+          </ul>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
